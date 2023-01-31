@@ -13,7 +13,7 @@ class Tile {
         this.tileName = tileName;
         this.initializeBlocksForTile();
         this.position.row = spawnRow;
-        this.position.column = Math.floor(spawnColumn-this.blocksVisual[0].length/2);
+        this.position.column = Math.floor(spawnColumn - this.blocksVisual[0].length / 2);
     }
 
     initializeBlocksForTile() {
@@ -27,43 +27,43 @@ class Tile {
                 break;
             case "S":
                 this.blocksVisual = [
-                    [0, 1, 1],
-                    [1, 1, 0],
+                    [0, 2, 2],
+                    [2, 2, 0],
                     [0, 0, 0]
                 ]
                 break;
             case "Z":
                 this.blocksVisual = [
-                    [1, 1, 0],
-                    [0, 1, 1],
+                    [3, 3, 0],
+                    [0, 3, 3],
                     [0, 0, 0]
                 ]
                 break;
             case "L":
                 this.blocksVisual = [
-                    [0, 0, 1],
-                    [1, 1, 1],
+                    [0, 0, 4],
+                    [4, 4, 4],
                     [0, 0, 0]
                 ]
                 break;
             case "J":
                 this.blocksVisual = [
-                    [1, 0, 0],
-                    [1, 1, 1],
+                    [5, 0, 0],
+                    [5, 5, 5],
                     [0, 0, 0]
                 ]
                 break;
             case "O":
                 this.blocksVisual = [
-                    [0, 1, 1, 0],
-                    [0, 1, 1, 0],
+                    [0, 6, 6, 0],
+                    [0, 6, 6, 0],
                     [0, 0, 0, 0]
                 ]
                 break;
             case "I":
                 this.blocksVisual = [
                     [0, 0, 0, 0],
-                    [1, 1, 1, 1],
+                    [7, 7, 7, 7],
                     [0, 0, 0, 0],
                     [0, 0, 0, 0]
                 ]
@@ -76,11 +76,28 @@ class Tile {
     }
 
     moveDown() {
-        console.log(this.checkIfReachedBottom());
         if (!this.checkIfReachedBottom()) {
             this.position.row++;
         } else {
             setNewCurrentTileFromQueue();
+        }
+    }
+
+    moveRight() {
+        if (!this.touchingRightBorder()) {
+            this.position.column++;
+            clearPlayField();
+            this.updateBlocksOnPlayField();
+            drawTetrisField();
+        }
+    }
+
+    moveLeft() {
+        if (!this.touchingLeftBorder()) {
+            this.position.column--
+            clearPlayField();
+            this.updateBlocksOnPlayField();
+            drawTetrisField();
         }
     }
 
@@ -98,19 +115,26 @@ class Tile {
         for (let i = 0; i < this.blocksVisual.length; i++) {
             for (let j = 0; j < this.blocksVisual[i].length; j++) {
                 if ((this.blocksVisual[i + 1] === undefined || this.blocksVisual[i + 1][j] === 0) && (this.blocksVisual[i][j] !== 0)) {
-                    console.log(this.blocksVisual[i + 1]);
-                    if(playField[this.position.row + i + 1] === undefined){
+                    if (playField[this.position.row + i + 1] === undefined) {
                         return true;
                     }
-                    if (this.blocksVisual[i][j] === 1 && playField[this.position.row + i + 1][this.position.column + j] !== 0) {
+                    if (this.blocksVisual[i][j] !== 0 && playField[this.position.row + i + 1][this.position.column + j] !== 0) {
                         return true;
                     }
-                    if (this.blocksVisual[i][j] === 1 && this.position.row + i >= 20) {
+                    if (this.blocksVisual[i][j] !== 0 && this.position.row + i >= 20) {
                         return true;
                     }
                 }
             }
         }
+        return false;
+    }
+
+    touchingLeftBorder() {
+        return false; //TODO: implement this.
+    }
+
+    touchingRightBorder() {
         return false;
     }
 }

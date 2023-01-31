@@ -23,6 +23,17 @@ for (let i = 0; i < 5; i++) {
     queue.push(getRandomTile());
 }
 
+document.addEventListener("keydown", ev => {
+    switch (ev.key){
+        case "ArrowLeft":
+            currentTile.moveLeft();
+            break;
+        case "ArrowRight":
+            currentTile.moveRight();
+            break;
+    }
+})
+
 console.log(queue);
 
 initializeField();
@@ -84,11 +95,34 @@ function drawTetrisField() {
     for (let i = 0; i < playField.length; i++) {
         for (let j = 0; j < playField[i].length; j++) {
             switch (playField[i][j]){
-                case 1:
+                case 7:
+                    playFieldElements[i][j].style.backgroundColor = "turquoise";
+                    break;
+                case 6:
                     playFieldElements[i][j].style.backgroundColor = "yellow";
+                    break;
+                case 5:
+                    playFieldElements[i][j].style.backgroundColor = "royalblue";
+                    break;
+                case 4:
+                    playFieldElements[i][j].style.backgroundColor = "orange";
+                    break;
+                case 3:
+                    playFieldElements[i][j].style.backgroundColor = "red";
+                    break;
+                case 2:
+                    playFieldElements[i][j].style.backgroundColor = "greenyellow";
+                    break;
+                case 1:
+                    playFieldElements[i][j].style.backgroundColor = "blueviolet";
                     break;
                 case 0:
                     playFieldElements[i][j].style.backgroundColor = "black";
+                    break;
+                default:
+                    playFieldElements[i][j].style.backgroundColor = "yellow";
+                    break;
+
             }
         }
     }
