@@ -9,8 +9,8 @@ for (let i = 0; i < 22; i++) {
     playFieldElements.push([]);
     playField[i].push(-1);
     playField[i].push(-1);
-    for (let j = 1; j < 11; j++) {
-        if(i<20){
+    for (let j = 2; j < 12; j++) {
+        if (i < 20) {
             playField[i].push(0);
         } else {
             playField[i].push(-3);
@@ -34,7 +34,7 @@ for (let i = 0; i < 5; i++) {
 }
 
 document.addEventListener("keydown", ev => {
-    switch (ev.key.toUpperCase()){
+    switch (ev.key.toUpperCase()) {
         case "ARROWLEFT":
         case "A":
             currentTile.move("left");
@@ -104,21 +104,43 @@ function setNewCurrentTileFromQueue() {
     queue.push(getRandomTile());
 }
 
+function addNewEmptyLineToFieldInTheFront(fieldElement) {
+    fieldElement.unshift([])
+    fieldElement[0].push(-1);
+    fieldElement[0].push(-1);
+    for (let j = 2; j < 12; j++) {
+        fieldElement[0].push(0);
+    }
+    fieldElement[0].push(-2);
+    fieldElement[0].push(-2);
+}
+
 function checkAndDeleteIfLinesCleared() {
     let linesCleared = [];
-    for (let i = 0; i < staticPlayFieldSave.length-2; i++) {
+    for (let i = 0; i < staticPlayFieldSave.length - 2; i++) {
         let singleLineCleared = true;
         for (let j = 0; j < staticPlayFieldSave[i].length; j++) {
-            if(staticPlayFieldSave[i][j] === 0){
+            if (staticPlayFieldSave[i][j] === 0) {
                 singleLineCleared = false;
                 break;
             }
         }
-        if(singleLineCleared){
+        if (singleLineCleared) {
             linesCleared.push(i);
         }
     }
     console.log(linesCleared);
+    let newStaticField = [];
+    for (let i = 0; i < staticPlayFieldSave.length; i++) {
+        if (!linesCleared.includes(i)) {
+            newStaticField.push(staticPlayFieldSave[i]);
+        } else {
+            addNewEmptyLineToFieldInTheFront(newStaticField);
+        }
+    }
+    staticPlayFieldSave = newStaticField;
+    clearPlayField();
+    drawTetrisField();
 }
 
 function doTetrisLogic() {
@@ -131,7 +153,7 @@ function doTetrisLogic() {
 function drawTetrisField() {
     for (let i = 0; i < playField.length; i++) {
         for (let j = 0; j < playField[i].length; j++) {
-            switch (playField[i][j]){
+            switch (playField[i][j]) {
                 case 7:
                     playFieldElements[i][j].style.backgroundColor = "turquoise";
                     break;
