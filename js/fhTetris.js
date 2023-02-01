@@ -4,39 +4,65 @@ let tilesNames = ["I", "T", "S", "Z", "L", "J", "O"];
 
 let staticPlayFieldSave = [];
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 22; i++) {
     playField.push([]);
     playFieldElements.push([]);
-    for (let j = 0; j < 10; j++) {
-        playField[i].push(0);
+    playField[i].push(-1);
+    playField[i].push(-1);
+    for (let j = 1; j < 11; j++) {
+        if(i<20){
+            playField[i].push(0);
+        } else {
+            playField[i].push(-3);
+        }
     }
+    playField[i].push(-2);
+    playField[i].push(-2);
 }
 
 let playFieldContainer = document.getElementById("playFieldContainer");
 let timeStampTick;
-let delayBetweenTicks = 500;
+let delayBetweenTicks = 1000;
 let currentTile = undefined;
 let queue = [];
 let spawnRow = 0, spawnColumn = 5;
+
+let score = 0;
 
 for (let i = 0; i < 5; i++) {
     queue.push(getRandomTile());
 }
 
 document.addEventListener("keydown", ev => {
-    switch (ev.key){
-        case "ArrowLeft":
-            currentTile.moveLeft();
+    switch (ev.key.toUpperCase()){
+        case "ARROWLEFT":
+        case "A":
+            currentTile.move("left");
             break;
-        case "ArrowRight":
-            currentTile.moveRight();
+        case "ARROWRIGHT":
+        case "D":
+            currentTile.move("right");
             break;
+        case "ARROWUP":
+        case "W":
+            currentTile.rotate(1);
+            break;
+        case "Q":
+            currentTile.rotate(-1);
+            break;
+        case "ARROWDOWN":
+        case "S":
+            currentTile.move("down");
+            break;
+        case " ":
+            currentTile.moveDownUntilItCannotAnymore();
     }
 })
 
 console.log(queue);
 
 initializeField();
+drawTetrisField();
 
 window.requestAnimationFrame(gameLoop);
 
@@ -73,22 +99,33 @@ function gameLoop(timestamp) {
 }
 
 function setNewCurrentTileFromQueue() {
-    console.log(playField);
     staticPlayFieldSave = JSON.parse(JSON.stringify(playField));
-    console.log(staticPlayFieldSave);
     currentTile = new Tile(queue.shift());
     queue.push(getRandomTile());
+}
+
+function checkAndDeleteIfLinesCleared() {
+    let linesCleared = [];
+    for (let i = 0; i < staticPlayFieldSave.length-2; i++) {
+        let singleLineCleared = true;
+        for (let j = 0; j < staticPlayFieldSave[i].length; j++) {
+            if(staticPlayFieldSave[i][j] === 0){
+                singleLineCleared = false;
+                break;
+            }
+        }
+        if(singleLineCleared){
+            linesCleared.push(i);
+        }
+    }
+    console.log(linesCleared);
 }
 
 function doTetrisLogic() {
     if (currentTile === undefined) {
         setNewCurrentTileFromQueue();
     }
-
-    currentTile.moveDown();
-    clearPlayField();
-
-    currentTile.updateBlocksOnPlayField();
+    currentTile.move("down");
 }
 
 function drawTetrisField() {
@@ -120,7 +157,8 @@ function drawTetrisField() {
                     playFieldElements[i][j].style.backgroundColor = "black";
                     break;
                 default:
-                    playFieldElements[i][j].style.backgroundColor = "yellow";
+                    playFieldElements[i][j].style.opacity = "0%";
+                    playFieldElements[i][j].style.backgroundColor = "grey";
                     break;
 
             }
