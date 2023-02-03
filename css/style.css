@@ -15,7 +15,7 @@ h1, h2 {
 }
 
 #containerLeft {
-    background-color: black;
+    background-color: #222222;
     width: 25%;
 }
 
@@ -31,12 +31,14 @@ h1, h2 {
 
 #containerRight {
     width: 25%;
-    background-color: black;
+    background: black;
+    justify-content: center;
 }
 
 #playFieldContainer {
+    height: 90%;
     text-align: center;
-    top: 0%;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
@@ -45,15 +47,15 @@ h1, h2 {
 
 .field {
     margin: 1px;
-    width: 3.8%;
+    width: 4.8%;
     height: 100%;
 }
 
 .row {
+    margin-top: 1px;
     justify-content: center;
     display: flex;
-    height: 3.8%;
-    margin-top: 1px;
+    height: 4.8%;
     width: 100%;
 }
 
@@ -72,7 +74,7 @@ h1, h2 {
     right: 0;
     margin: auto;
 
-    border: red 5px solid;
+    border: red 6px solid;
 }
 
 h1.gameOver {
@@ -88,8 +90,65 @@ h1.gameOver {
     font: bold 50px Arial;
 
     text-align: center;
-    top: 10%;
+    top: 0;
     left: 0;
     right: 0;
     margin: auto;
+}
+
+.queueTileElement {
+    margin-top: 20px;
+    height: 15%;
+    width: 30%;
+    border: red 5px solid;
+}
+
+#headerRight{
+    height: 5%;
+    width: 100%;
+    text-align: center;
+    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+}
+
+.queueField {
+    margin-left: 1%;
+    width: 24%;
+    height: 100%;
+    background-color: black;
+}
+
+.queueRow {
+    justify-content: center;
+    display: flex;
+    height: 24%;
+    margin-top: 1%;
+    width: 100%;
+}
+
+.queueFieldFirst {
+    margin-left: 1%;
+    width: 24%;
+    height: 100%;
+    background-color: black;
+}
+
+.queueRowFirst {
+    justify-content: center;
+    display: flex;
+    height: 24%;
+    margin-top: 1%;
+    width: 100%;
+}
+
+
+.queueTileElement:has(div.queueRowFirst) {
+    height: 24%;
+    width: 45%;
+    margin-bottom: 0;
+}
+
+#queueTitle{
+    margin-top: 2%;
+    color: white;
+    font-size: 50px;
 }

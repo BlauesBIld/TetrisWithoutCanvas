@@ -17,64 +17,14 @@ class Tile {
         this.tileName = tileName;
         this.initializeBlocksForTile();
         this.position.row = spawnRow;
-        this.position.column = spawnColumn - Math.floor(this.blocksVisual[0].length / 2);
-        if (this.checkIfRotationIsBlockByOtherBlock(this.blocksVisual, this.position.row+1, this.position.column)) {
+        this.position.column = spawnColumn - Math.ceil(this.blocksVisual[0].length / 2);
+        if (this.checkIfRotationIsBlockByOtherBlock(this.blocksVisual, this.position.row + 1, this.position.column)) {
             gameOver();
         }
     }
 
     initializeBlocksForTile() {
-        switch (this.tileName) {
-            case "T":
-                this.blocksVisual = [
-                    [0, 1, 0],
-                    [1, 1, 1],
-                    [0, 0, 0]
-                ]
-                break;
-            case "S":
-                this.blocksVisual = [
-                    [0, 2, 2],
-                    [2, 2, 0],
-                    [0, 0, 0]
-                ]
-                break;
-            case "Z":
-                this.blocksVisual = [
-                    [3, 3, 0],
-                    [0, 3, 3],
-                    [0, 0, 0]
-                ]
-                break;
-            case "L":
-                this.blocksVisual = [
-                    [0, 0, 4],
-                    [4, 4, 4],
-                    [0, 0, 0]
-                ]
-                break;
-            case "J":
-                this.blocksVisual = [
-                    [5, 0, 0],
-                    [5, 5, 5],
-                    [0, 0, 0]
-                ]
-                break;
-            case "O":
-                this.blocksVisual = [
-                    [6, 6],
-                    [6, 6],
-                ]
-                break;
-            case "I":
-                this.blocksVisual = [
-                    [0, 0, 0, 0],
-                    [7, 7, 7, 7],
-                    [0, 0, 0, 0],
-                    [0, 0, 0, 0]
-                ]
-                break;
-        }
+        this.blocksVisual = blocksVisualConfig[this.tileName];
     }
 
     moveDown() {
@@ -181,47 +131,49 @@ class Tile {
 
 
     rotate(direction) {
-        let placeHolderForBlocksVisual = this.getRotatedTile(direction),
-            placerHolderRotation = this.rotation + direction;
+        if (this.tileName != "O") {
+            let placeHolderForBlocksVisual = this.getRotatedTile(direction),
+                placerHolderRotation = this.rotation + direction;
 
-        if (placerHolderRotation < 0) {
-            placerHolderRotation = 3;
-        } else if (placerHolderRotation > 3) {
-            placerHolderRotation = 0;
-        }
+            if (placerHolderRotation < 0) {
+                placerHolderRotation = 3;
+            } else if (placerHolderRotation > 3) {
+                placerHolderRotation = 0;
+            }
 
-        if (!this.checkIfRotationIsBlockByOtherBlock(placeHolderForBlocksVisual, this.position.row, this.position.column)) {
-            this.blocksVisual = placeHolderForBlocksVisual;
-            this.rotation = placerHolderRotation;
-        } else {
-            if (this.tileName === "I") {
-                let rotationName = this.rotation + "." + placerHolderRotation;
-                for (let i = 0; i < rotationChecksForI[rotationName].length; i++) {
-                    if (!this.checkIfRotationIsBlockByOtherBlock(placeHolderForBlocksVisual, this.position.row + rotationChecksForI[rotationName][i][1], this.position.column + rotationChecksForI[rotationName][i][0])) {
-                        this.blocksVisual = placeHolderForBlocksVisual;
-                        this.rotation = placerHolderRotation;
-                        this.position.row += rotationChecksForI[rotationName][i][1];
-                        this.position.column += rotationChecksForI[rotationName][i][0];
-                        break;
-                    }
-                }
+            if (!this.checkIfRotationIsBlockByOtherBlock(placeHolderForBlocksVisual, this.position.row, this.position.column)) {
+                this.blocksVisual = placeHolderForBlocksVisual;
+                this.rotation = placerHolderRotation;
             } else {
-                let rotationName = this.rotation + "." + placerHolderRotation;
-                for (let i = 0; i < rotationChecks[rotationName].length; i++) {
-                    if (!this.checkIfRotationIsBlockByOtherBlock(placeHolderForBlocksVisual, this.position.row + rotationChecks[rotationName][i][1], this.position.column + rotationChecks[rotationName][i][0])) {
-                        this.blocksVisual = placeHolderForBlocksVisual;
-                        this.rotation = placerHolderRotation;
-                        this.position.row += rotationChecks[rotationName][i][1];
-                        this.position.column += rotationChecks[rotationName][i][0];
-                        break;
+                if (this.tileName === "I") {
+                    let rotationName = this.rotation + "." + placerHolderRotation;
+                    for (let i = 0; i < rotationChecksForI[rotationName].length; i++) {
+                        if (!this.checkIfRotationIsBlockByOtherBlock(placeHolderForBlocksVisual, this.position.row + rotationChecksForI[rotationName][i][1], this.position.column + rotationChecksForI[rotationName][i][0])) {
+                            this.blocksVisual = placeHolderForBlocksVisual;
+                            this.rotation = placerHolderRotation;
+                            this.position.row += rotationChecksForI[rotationName][i][1];
+                            this.position.column += rotationChecksForI[rotationName][i][0];
+                            break;
+                        }
+                    }
+                } else {
+                    let rotationName = this.rotation + "." + placerHolderRotation;
+                    for (let i = 0; i < rotationChecks[rotationName].length; i++) {
+                        if (!this.checkIfRotationIsBlockByOtherBlock(placeHolderForBlocksVisual, this.position.row + rotationChecks[rotationName][i][1], this.position.column + rotationChecks[rotationName][i][0])) {
+                            this.blocksVisual = placeHolderForBlocksVisual;
+                            this.rotation = placerHolderRotation;
+                            this.position.row += rotationChecks[rotationName][i][1];
+                            this.position.column += rotationChecks[rotationName][i][0];
+                            break;
+                        }
                     }
                 }
             }
-        }
 
-        setPlayFieldToStaticField();
-        this.updateBlocksOnPlayField();
-        drawTetrisField();
+            setPlayFieldToStaticField();
+            this.updateBlocksOnPlayField();
+            drawTetrisField();
+        }
     }
 
     getRotatedTile(direction) {

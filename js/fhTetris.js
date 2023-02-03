@@ -4,12 +4,19 @@ let tilesNames = ["I", "T", "S", "Z", "L", "J", "O"];
 
 let staticPlayFieldSave = [];
 
+let queue = [];
+
 let isGameActive = false;
 let middleWindow = document.getElementById("gameOverContainer");
 middleWindow.style.display = "block";
 
 let score = 0;
 let scoreDisplay = document.getElementById("scoreDisplay");
+
+let queueDisplay = new QueueDisplay();
+
+let pressedHold = false;
+let tileInHoldSpot = undefined;
 
 for (let i = 0; i < 22; i++) {
     playField.push([]);
@@ -29,8 +36,7 @@ let playFieldContainer = document.getElementById("playFieldContainer");
 let timeStampTick;
 let delayBetweenTicks = 1000;
 let currentTile = undefined;
-let queue = [];
-let spawnRow = 0, spawnColumn = 5;
+let spawnRow = 0, spawnColumn = 6;
 let elapsed = Number.MAX_SAFE_INTEGER;
 
 let invisibleTileOpacity = "0%";
@@ -42,6 +48,7 @@ function initializeQueue() {
 }
 
 initializeQueue();
+
 console.log(queue);
 
 initializeField();
@@ -94,6 +101,7 @@ function setNewCurrentTileFromQueue() {
     queue.push(getRandomTile());
     setElapsedTimeBetweenTicksToMax();
     setPlayFieldToStaticField();
+    queueDisplay.refreshQueueView();
 }
 
 function addNewEmptyLineToFieldInTheFront(fieldElement) {
@@ -261,5 +269,9 @@ function resetPlayField() {
 
     initializeQueue();
     drawTetrisField();
+}
+
+function holdTile(){
+
 }
 
