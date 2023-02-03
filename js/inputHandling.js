@@ -1,4 +1,5 @@
 document.addEventListener("keydown", ev => {
+    console.log(ev.key)
     if(isGameActive) {
         switch (ev.key.toUpperCase()) {
             case "ARROWLEFT":
@@ -21,6 +22,9 @@ document.addEventListener("keydown", ev => {
                 if (!currentTile.checkIfReachedBottom()) {
                     currentTile.move("down");
                 }
+                break;
+            case "C":
+                holdTile();
                 break;
             case " ":
                 currentTile.moveDownUntilItCannotAnymore();

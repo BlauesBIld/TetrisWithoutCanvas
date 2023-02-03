@@ -15,12 +15,12 @@ h1, h2 {
 }
 
 #containerLeft {
-    background-color: #222222;
+    background-color: black;
     width: 25%;
 }
 
 #containerMid {
-    background-color: blue;
+    background-color: black;
     width: 50%;
     top: 0;
     bottom: 0;
@@ -46,13 +46,13 @@ h1, h2 {
 }
 
 .field {
-    margin: 1px;
+    margin: 0px;
     width: 4.8%;
     height: 100%;
+    border: 1px grey solid;
 }
 
 .row {
-    margin-top: 1px;
     justify-content: center;
     display: flex;
     height: 4.8%;
@@ -74,7 +74,7 @@ h1, h2 {
     right: 0;
     margin: auto;
 
-    border: red 6px solid;
+    border: grey 6px solid;
 }
 
 h1.gameOver {
@@ -88,9 +88,10 @@ h1.gameOver {
 #scoreDisplay {
     position: absolute;
     font: bold 50px Arial;
+    color: white;
 
     text-align: center;
-    top: 0;
+    top: 1%;
     left: 0;
     right: 0;
     margin: auto;
@@ -100,10 +101,10 @@ h1.gameOver {
     margin-top: 20px;
     height: 15%;
     width: 30%;
-    border: red 5px solid;
+    border: grey 5px solid;
 }
 
-#headerRight{
+.header{
     height: 5%;
     width: 100%;
     text-align: center;
@@ -111,44 +112,63 @@ h1.gameOver {
 }
 
 .queueField {
-    margin-left: 1%;
-    width: 24%;
+    width: 25%;
     height: 100%;
     background-color: black;
+    border: 1px grey solid;
 }
 
 .queueRow {
     justify-content: center;
     display: flex;
-    height: 24%;
-    margin-top: 1%;
+    height: 25%;
     width: 100%;
 }
 
 .queueFieldFirst {
-    margin-left: 1%;
-    width: 24%;
+    width: 25%;
     height: 100%;
     background-color: black;
+    border: 1px grey solid;
 }
 
 .queueRowFirst {
     justify-content: center;
     display: flex;
-    height: 24%;
-    margin-top: 1%;
+    height: 25%;
     width: 100%;
 }
 
 
 .queueTileElement:has(div.queueRowFirst) {
-    height: 24%;
+    height: 23%;
     width: 45%;
     margin-bottom: 0;
 }
 
-#queueTitle{
+.title{
     margin-top: 2%;
     color: white;
     font-size: 50px;
+}
+
+.holdField {
+    width: 25%;
+    height: 100%;
+    background-color: black;
+    border: 1px grey solid;
+}
+
+.holdRow {
+    justify-content: center;
+    display: flex;
+    height: 25%;
+    width: 100%;
+}
+
+#holdContainer{
+    margin-top: 20px;
+    height: 24%;
+    width: 45%;
+    border: grey 5px solid;
 }

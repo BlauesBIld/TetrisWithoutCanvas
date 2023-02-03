@@ -8,7 +8,14 @@
 </head>
 <body>
 <div id="containerGroup">
-    <div id="containerLeft" class="container"></div>
+    <div id="containerLeft" class="container">
+        <div class="header container">
+            <h1 class="title">Hold</h1>
+        </div>
+        <div id="holdContainer">
+
+        </div>
+    </div>
     <div id="containerMid" class="container">
         <div id="playFieldContainer">
             <h1 id="scoreDisplay">Score: 0</h1>
@@ -19,14 +26,16 @@
         </div>
     </div>
     <div id="containerRight" class="container">
-        <div id="headerRight" class="container">
-            <h1 id="queueTitle">Queue</h1>
+        <div class="header container">
+            <h1 class="title">Queue</h1>
         </div>
     </div>
 </div>
 </body>
 <script src="js/blockVisualsConfig.js"></script>
+<script src="js/drawTiles.js"></script>
 <script src="js/queueDisplay.js"></script>
+<script src="js/holdDisplay.js"></script>
 <script src="js/tile.js"></script>
 <script src="js/rotationConfig.js"></script>
 <script src="js/fhTetris.js"></script>

@@ -15,8 +15,9 @@ let scoreDisplay = document.getElementById("scoreDisplay");
 
 let queueDisplay = new QueueDisplay();
 
+let holdDisplay = new HoldDisplay();
 let pressedHold = false;
-let tileInHoldSpot = undefined;
+let itemNameBeforeSwapping = undefined;
 
 for (let i = 0; i < 22; i++) {
     playField.push([]);
@@ -40,6 +41,7 @@ let spawnRow = 0, spawnColumn = 6;
 let elapsed = Number.MAX_SAFE_INTEGER;
 
 let invisibleTileOpacity = "0%";
+let previewTileOpacity = "50%";
 
 function initializeQueue() {
     for (let i = 0; i < 5; i++) {
@@ -73,6 +75,17 @@ function initializeField() {
     }
 }
 
+function swapCurrentTileWithTileInHoldSpot() {
+    if (!pressedHold) {
+        setStaticFieldToPlayField();
+    }
+    currentTile = new Tile(itemNameBeforeSwapping);
+    itemNameBeforeSwapping = undefined;
+    setElapsedTimeBetweenTicksToMax();
+    setPlayFieldToStaticField();
+    queueDisplay.refreshQueueView();
+}
+
 function gameLoop(timestamp) {
     if (isGameActive) {
         if (timeStampTick === undefined) {
@@ -80,7 +93,11 @@ function gameLoop(timestamp) {
         }
 
         if (currentTile === undefined) {
-            setNewCurrentTileFromQueue();
+            if(itemNameBeforeSwapping !== undefined && holdDisplay.holdingTileName !== undefined) {
+                swapCurrentTileWithTileInHoldSpot();
+            } else {
+                setNewCurrentTileFromQueue();
+            }
         } else {
             elapsed = timestamp - timeStampTick;
         }
@@ -89,6 +106,7 @@ function gameLoop(timestamp) {
             doTetrisLogic();
             drawTetrisField();
             timeStampTick = timestamp;
+            pressedHold = false;
         }
 
         window.requestAnimationFrame(gameLoop);
@@ -96,7 +114,9 @@ function gameLoop(timestamp) {
 }
 
 function setNewCurrentTileFromQueue() {
-    setStaticFieldToPlayField();
+    if (!pressedHold) {
+        setStaticFieldToPlayField();
+    }
     currentTile = new Tile(queue.shift());
     queue.push(getRandomTile());
     setElapsedTimeBetweenTicksToMax();
@@ -175,6 +195,7 @@ function drawTetrisField() {
 
     for (let i = 2; i < playField.length; i++) {
         for (let j = 0; j < playField[i].length; j++) {
+            playFieldElements[i][j].style.opacity = "100%";
             switch (playField[i][j]) {
                 case 7:
                     playFieldElements[i][j].style.backgroundColor = "turquoise";
@@ -198,13 +219,40 @@ function drawTetrisField() {
                     playFieldElements[i][j].style.backgroundColor = "blueviolet";
                     break;
                 case 0:
-                    playFieldElements[i][j].style.backgroundColor = "black";
+                    playFieldElements[i][j].style.backgroundColor = "rgba(0,0,0,0)";
                     break;
                 default:
                     playFieldElements[i][j].style.opacity = invisibleTileOpacity;
                     playFieldElements[i][j].style.backgroundColor = "grey";
                     break;
-
+                case 8:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "blueviolet";
+                    break;
+                case 9:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "greenyellow";
+                    break;
+                case 10:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "red";
+                    break;
+                case 11:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "orange";
+                    break;
+                case 12:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "royalblue";
+                    break;
+                case 13:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "yellow";
+                    break;
+                case 14:
+                    playFieldElements[i][j].style.opacity = previewTileOpacity;
+                    playFieldElements[i][j].style.backgroundColor = "turquoise";
+                    break;
             }
         }
     }
@@ -253,6 +301,7 @@ function resetPlayField() {
     staticPlayFieldSave = [];
     queue = [];
     currentTile = undefined;
+    holdDisplay.setHoldingTileName(undefined);
 
     for (let i = 0; i < 22; i++) {
         playField.push([]);
@@ -271,7 +320,13 @@ function resetPlayField() {
     drawTetrisField();
 }
 
-function holdTile(){
-
+function holdTile() {
+    if(holdDisplay.holdingTileName !== undefined){
+        itemNameBeforeSwapping =  holdDisplay.holdingTileName;
+    }
+    holdDisplay.setHoldingTileName(currentTile.tileName);
+    pressedHold = true;
+    currentTile = undefined;
+    setElapsedTimeBetweenTicksToMax();
 }
 

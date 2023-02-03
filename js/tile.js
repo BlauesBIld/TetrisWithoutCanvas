@@ -1,6 +1,7 @@
 class Tile {
 
     blocksVisual;
+    previewBlocksVisual;
 
     position = {
         row: 0,
@@ -23,8 +24,18 @@ class Tile {
         }
     }
 
+
     initializeBlocksForTile() {
         this.blocksVisual = blocksVisualConfig[this.tileName];
+        this.previewBlocksVisual = [];
+        for (let i = 0; i < this.blocksVisual.length; i++) {
+            this.previewBlocksVisual.push([]);
+            for (let j = 0; j < this.blocksVisual[i].length; j++) {
+                this.previewBlocksVisual[i].push(this.blocksVisual[i][j]===0?this.blocksVisual[i][j]:this.blocksVisual[i][j]+7);
+            }
+        }
+        console.log(this.blocksVisual);
+        console.log(this.previewBlocksVisual);
     }
 
     moveDown() {
@@ -71,6 +82,7 @@ class Tile {
     }
 
     updateBlocksOnPlayField() {
+        this.setNumbersOfPreviewOnPlayfield();
         for (let i = 0; i < this.blocksVisual.length; i++) {
             for (let j = 0; j < this.blocksVisual[i].length; j++) {
                 if (this.blocksVisual[i][j] !== 0 && playField[this.position.row + i][this.position.column + j] !== undefined) {
@@ -87,7 +99,7 @@ class Tile {
                     if (playField[this.position.row + i + 1] === undefined) {
                         return true;
                     }
-                    if (this.blocksVisual[i][j] !== 0 && playField[this.position.row + i + 1][this.position.column + j] !== 0) {
+                    if (this.blocksVisual[i][j] !== 0 && playField[this.position.row + i + 1][this.position.column + j] > 0 && playField[this.position.row + i + 1][this.position.column + j] <= 7) {
                         return true;
                     }
                     if (this.blocksVisual[i][j] !== 0 && this.position.row + i >= 20) {
@@ -103,7 +115,7 @@ class Tile {
         for (let i = 0; i < this.blocksVisual.length; i++) {
             for (let j = 0; j < this.blocksVisual[i].length; j++) {
                 if ((this.blocksVisual[i][j - 1] === undefined || this.blocksVisual[i][j - 1] === 0) && this.blocksVisual[i][j] > 0) {
-                    if (playField[this.position.row][this.position.column + j - 1] === -1 || playField[this.position.row + i][this.position.column + j - 1] > 0) {
+                    if (playField[this.position.row][this.position.column + j - 1] === -1 || playField[this.position.row + i][this.position.column + j - 1] > 0 && playField[this.position.row + i + 1][this.position.column + j] <= 7) {
                         return true;
                     }
                 }
@@ -131,7 +143,7 @@ class Tile {
 
 
     rotate(direction) {
-        if (this.tileName != "O") {
+        if (this.tileName !== "O") {
             let placeHolderForBlocksVisual = this.getRotatedTile(direction),
                 placerHolderRotation = this.rotation + direction;
 
@@ -189,6 +201,22 @@ class Tile {
             for (let j = 0; j < placeHolderForBlocksVisual[i].length; j++) {
                 if (placeHolderForBlocksVisual[i][j] > 0 && staticPlayFieldSave[row + i][column + j] !== 0) {
                     return true;
+                }
+            }
+        }
+    }
+
+    setNumbersOfPreviewOnPlayfield() {
+        let row = this.position.row;
+        while(!this.checkIfRotationIsBlockByOtherBlock(this.blocksVisual, row, this.position.column)){
+            row++;
+        }
+        row--;
+
+        for (let i = 0; i < this.blocksVisual.length; i++) {
+            for (let j = 0; j < this.blocksVisual[i].length; j++) {
+                if (this.blocksVisual[i][j] !== 0 && playField[row + i][this.position.column + j] !== undefined) {
+                    playField[row + i][this.position.column + j] = this.blocksVisual[i][j]===0?this.blocksVisual[i][j]:this.blocksVisual[i][j]+7;
                 }
             }
         }
