@@ -4,19 +4,24 @@ let tilesNames = ["I", "T", "S", "Z", "L", "J", "O"];
 
 let staticPlayFieldSave = [];
 
+let isGameActive = false;
+let middleWindow = document.getElementById("gameOverContainer");
+middleWindow.style.display = "block";
+
+let score = 0;
+let scoreDisplay = document.getElementById("scoreDisplay");
+
 for (let i = 0; i < 22; i++) {
     playField.push([]);
     playFieldElements.push([]);
     playField[i].push(-1);
-    playField[i].push(-1);
-    for (let j = 2; j < 12; j++) {
-        if (i < 20) {
+    for (let j = 1; j < 11; j++) {
+        if (i < 21) {
             playField[i].push(0);
         } else {
             playField[i].push(-3);
         }
     }
-    playField[i].push(-2);
     playField[i].push(-2);
 }
 
@@ -26,39 +31,17 @@ let delayBetweenTicks = 1000;
 let currentTile = undefined;
 let queue = [];
 let spawnRow = 0, spawnColumn = 5;
+let elapsed = Number.MAX_SAFE_INTEGER;
 
-let score = 0;
+let invisibleTileOpacity = "0%";
 
-for (let i = 0; i < 5; i++) {
-    queue.push(getRandomTile());
+function initializeQueue() {
+    for (let i = 0; i < 5; i++) {
+        queue.push(getRandomTile());
+    }
 }
 
-document.addEventListener("keydown", ev => {
-    switch (ev.key.toUpperCase()) {
-        case "ARROWLEFT":
-        case "A":
-            currentTile.move("left");
-            break;
-        case "ARROWRIGHT":
-        case "D":
-            currentTile.move("right");
-            break;
-        case "ARROWUP":
-        case "W":
-            currentTile.rotate(1);
-            break;
-        case "Q":
-            currentTile.rotate(-1);
-            break;
-        case "ARROWDOWN":
-        case "S":
-            currentTile.move("down");
-            break;
-        case " ":
-            currentTile.moveDownUntilItCannotAnymore();
-    }
-})
-
+initializeQueue();
 console.log(queue);
 
 initializeField();
@@ -84,40 +67,66 @@ function initializeField() {
 }
 
 function gameLoop(timestamp) {
-    if (timeStampTick === undefined) {
-        timeStampTick = timestamp;
-    }
-    const elapsed = timestamp - timeStampTick;
+    if (isGameActive) {
+        if (timeStampTick === undefined) {
+            timeStampTick = timestamp;
+        }
 
-    if (elapsed > delayBetweenTicks) {
-        doTetrisLogic();
-        drawTetrisField();
-        timeStampTick = timestamp;
-    }
+        if (currentTile === undefined) {
+            setNewCurrentTileFromQueue();
+        } else {
+            elapsed = timestamp - timeStampTick;
+        }
 
-    window.requestAnimationFrame(gameLoop);
+        if (elapsed > delayBetweenTicks) {
+            doTetrisLogic();
+            drawTetrisField();
+            timeStampTick = timestamp;
+        }
+
+        window.requestAnimationFrame(gameLoop);
+    }
 }
 
 function setNewCurrentTileFromQueue() {
-    staticPlayFieldSave = JSON.parse(JSON.stringify(playField));
+    setStaticFieldToPlayField();
     currentTile = new Tile(queue.shift());
     queue.push(getRandomTile());
+    setElapsedTimeBetweenTicksToMax();
+    setPlayFieldToStaticField();
 }
 
 function addNewEmptyLineToFieldInTheFront(fieldElement) {
     fieldElement.unshift([])
     fieldElement[0].push(-1);
-    fieldElement[0].push(-1);
-    for (let j = 2; j < 12; j++) {
+    for (let j = 1; j < 11; j++) {
         fieldElement[0].push(0);
     }
     fieldElement[0].push(-2);
-    fieldElement[0].push(-2);
+}
+
+function calculateAndAddPoints(amountLinesCleared) {
+    switch (amountLinesCleared) {
+        case 1:
+            score += 40;
+            break;
+        case 2:
+            score += 100;
+            break;
+        case 3:
+            score += 300;
+            break;
+        case 4:
+            score += 1200;
+            break;
+    }
+    scoreDisplay.innerHTML = "Score: " + score;
+
 }
 
 function checkAndDeleteIfLinesCleared() {
     let linesCleared = [];
-    for (let i = 0; i < staticPlayFieldSave.length - 2; i++) {
+    for (let i = 0; i < staticPlayFieldSave.length - 1; i++) {
         let singleLineCleared = true;
         for (let j = 0; j < staticPlayFieldSave[i].length; j++) {
             if (staticPlayFieldSave[i][j] === 0) {
@@ -129,7 +138,7 @@ function checkAndDeleteIfLinesCleared() {
             linesCleared.push(i);
         }
     }
-    console.log(linesCleared);
+
     let newStaticField = [];
     for (let i = 0; i < staticPlayFieldSave.length; i++) {
         if (!linesCleared.includes(i)) {
@@ -138,20 +147,25 @@ function checkAndDeleteIfLinesCleared() {
             addNewEmptyLineToFieldInTheFront(newStaticField);
         }
     }
+
     staticPlayFieldSave = newStaticField;
-    clearPlayField();
+    setPlayFieldToStaticField();
     drawTetrisField();
+    calculateAndAddPoints(linesCleared.length);
 }
 
 function doTetrisLogic() {
-    if (currentTile === undefined) {
-        setNewCurrentTileFromQueue();
-    }
     currentTile.move("down");
 }
 
 function drawTetrisField() {
-    for (let i = 0; i < playField.length; i++) {
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < playField[i].length; j++) {
+            playFieldElements[i][j].style.opacity = invisibleTileOpacity;
+        }
+    }
+
+    for (let i = 2; i < playField.length; i++) {
         for (let j = 0; j < playField[i].length; j++) {
             switch (playField[i][j]) {
                 case 7:
@@ -179,7 +193,7 @@ function drawTetrisField() {
                     playFieldElements[i][j].style.backgroundColor = "black";
                     break;
                 default:
-                    playFieldElements[i][j].style.opacity = "0%";
+                    playFieldElements[i][j].style.opacity = invisibleTileOpacity;
                     playFieldElements[i][j].style.backgroundColor = "grey";
                     break;
 
@@ -196,6 +210,56 @@ function getRandomTile() {
     return randoTile;
 }
 
-function clearPlayField() {
+function setPlayFieldToStaticField() {
     playField = JSON.parse(JSON.stringify(staticPlayFieldSave));
 }
+
+function setStaticFieldToPlayField() {
+    staticPlayFieldSave = JSON.parse(JSON.stringify(playField));
+}
+
+function setElapsedTimeBetweenTicksToZero() {
+    elapsed = 0;
+}
+
+function setElapsedTimeBetweenTicksToMax() {
+    elapsed = Number.MAX_SAFE_INTEGER;
+}
+
+function gameOver() {
+    middleWindow.style.display = "block";
+    middleWindow.children[0].innerHTML = "Game over!";
+    middleWindow.children[1].innerHTML = "Press [R] to \n restart!";
+    isGameActive = false;
+}
+
+function startGame() {
+    middleWindow.style.display = "none";
+    resetPlayField();
+    requestAnimationFrame(gameLoop);
+    isGameActive = true;
+}
+
+function resetPlayField() {
+    playField = [];
+    staticPlayFieldSave = [];
+    queue = [];
+    currentTile = undefined;
+
+    for (let i = 0; i < 22; i++) {
+        playField.push([]);
+        playField[i].push(-1);
+        for (let j = 1; j < 11; j++) {
+            if (i < 21) {
+                playField[i].push(0);
+            } else {
+                playField[i].push(-3);
+            }
+        }
+        playField[i].push(-2);
+    }
+
+    initializeQueue();
+    drawTetrisField();
+}
+

@@ -17,7 +17,10 @@ class Tile {
         this.tileName = tileName;
         this.initializeBlocksForTile();
         this.position.row = spawnRow;
-        this.position.column = Math.floor(spawnColumn - this.blocksVisual[0].length / 2);
+        this.position.column = spawnColumn - Math.floor(this.blocksVisual[0].length / 2);
+        if (this.checkIfRotationIsBlockByOtherBlock(this.blocksVisual, this.position.row+1, this.position.column)) {
+            gameOver();
+        }
     }
 
     initializeBlocksForTile() {
@@ -78,9 +81,11 @@ class Tile {
         if (!this.checkIfReachedBottom()) {
             this.position.row++;
         } else {
+            setStaticFieldToPlayField();
             this.placed = true;
-            setNewCurrentTileFromQueue();
+            currentTile = undefined;
             checkAndDeleteIfLinesCleared();
+            setElapsedTimeBetweenTicksToMax();
         }
     }
 
@@ -92,9 +97,11 @@ class Tile {
         } else if (direction === "down") {
             this.moveDown();
         }
-        clearPlayField();
-        this.updateBlocksOnPlayField();
-        drawTetrisField();
+        if (!this.placed) {
+            setPlayFieldToStaticField();
+            this.updateBlocksOnPlayField();
+            drawTetrisField();
+        }
     }
 
     moveRight(checkForBorder = true) {
@@ -166,30 +173,6 @@ class Tile {
         }
     }
 
-    correctPositionIfOutsideOfPlayingField() {
-        for (let i = 0; i < this.blocksVisual.length; i++) {
-            for (let j = 0; j < Math.floor(this.blocksVisual[i].length / 2); j++) {
-                if (this.blocksVisual[i][j] > 0 && playField[this.position.row + i][this.position.column + j] === -1) {
-                    this.moveRight(false);
-                }
-            }
-        }
-        for (let i = 0; i < this.blocksVisual.length; i++) {
-            for (let j = this.blocksVisual[i].length - 1; j >= Math.floor(this.blocksVisual[i].length / 2); j--) {
-                if (this.blocksVisual[i][j] > 0 && playField[this.position.row + i][this.position.column + j] === -2) {
-                    this.moveLeft(false);
-                }
-            }
-        }
-        for (let i = Math.floor(this.blocksVisual.length / 2); i < this.blocksVisual.length; i++) {
-            for (let j = 0; j < this.blocksVisual[i].length; j++) {
-                if (this.blocksVisual[i][j] > 0 && playField[this.position.row + i][this.position.column + j] === -3) {
-                    this.moveUp();
-                }
-            }
-        }
-    }
-
     moveDownUntilItCannotAnymore() {
         while (this.placed === false) {
             this.move("down");
@@ -236,7 +219,7 @@ class Tile {
             }
         }
 
-        clearPlayField();
+        setPlayFieldToStaticField();
         this.updateBlocksOnPlayField();
         drawTetrisField();
     }

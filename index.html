@@ -11,14 +11,22 @@
     <div id="containerLeft" class="container"></div>
     <div id="containerMid" class="container">
         <div id="playFieldContainer">
-                <h1>FH Tetris</h1>
-                <h2>by Dejan Zeljko</h2>
+            <h1>FH Tetris</h1>
+            <h2>by Dejan Zeljko</h2>
+            <h1 id="scoreDisplay">Score: 0</h1>
+        </div>
+        <div id="gameOverContainer">
+            <h1 id="middleWindowTitle" class="gameOver">Welcome!</h1>
+            <h2 id="middleWindowSubtext" class="gameOver">Press [R] to <br>start!</h2>
         </div>
     </div>
-    <div id="containerRight" class="container"></div>
+    <div id="containerRight" class="container">
+
+    </div>
 </div>
 </body>
-<script src="js/fhTetris.js"></script>
 <script src="js/tile.js"></script>
 <script src="js/rotationConfig.js"></script>
+<script src="js/fhTetris.js"></script>
+<script src="js/inputHandling.js"></script>
 </html>
