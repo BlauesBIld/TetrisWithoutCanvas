@@ -399,6 +399,7 @@ function startGame() {
 }
 
 function resetPlayField() {
+    iterationOfTiles = 0;
     playField = [];
     staticPlayFieldSave = [];
     queue = [];
@@ -419,6 +420,7 @@ function resetPlayField() {
         playField[i].push(-2);
     }
 
+    setStaticFieldToPlayField();
     drawTetrisField();
 }
 
