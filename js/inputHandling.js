@@ -1,6 +1,5 @@
 document.addEventListener("keydown", ev => {
-    console.log(ev.key)
-    if(isGameActive) {
+    if (isGameActive) {
         switch (ev.key.toUpperCase()) {
             case "ARROWLEFT":
             case "A":
@@ -21,6 +20,7 @@ document.addEventListener("keydown", ev => {
             case "S":
                 if (!currentTile.checkIfReachedBottom()) {
                     currentTile.move("down");
+                    setElapsedTimeBetweenTicksToZero();
                 }
                 break;
             case "C":
@@ -29,9 +29,8 @@ document.addEventListener("keydown", ev => {
             case " ":
                 currentTile.moveDownUntilItCannotAnymore();
         }
-    } else {
-        if(ev.key.toUpperCase() === "R"){
-            startGame();
-        }
+    }
+    if (ev.key.toUpperCase() === "R") {
+        startGame();
     }
 })

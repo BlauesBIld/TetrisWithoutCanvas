@@ -20,7 +20,7 @@ class Tile {
         this.position.row = spawnRow;
         this.position.column = spawnColumn - Math.ceil(this.blocksVisual[0].length / 2);
         if (this.checkIfRotationIsBlockByOtherBlock(this.blocksVisual, this.position.row + 1, this.position.column)) {
-            gameOver();
+            gameOver(true);
         }
     }
 
@@ -34,8 +34,6 @@ class Tile {
                 this.previewBlocksVisual[i].push(this.blocksVisual[i][j]===0?this.blocksVisual[i][j]:this.blocksVisual[i][j]+7);
             }
         }
-        console.log(this.blocksVisual);
-        console.log(this.previewBlocksVisual);
     }
 
     moveDown() {
@@ -46,7 +44,6 @@ class Tile {
             this.placed = true;
             currentTile = undefined;
             checkAndDeleteIfLinesCleared();
-            setElapsedTimeBetweenTicksToMax();
         }
     }
 

@@ -21,7 +21,7 @@ h1, h2 {
 
 #containerMid {
     background-color: black;
-    width: 50%;
+    width: 30%;
     top: 0;
     bottom: 0;
     left: 0;
@@ -31,6 +31,12 @@ h1, h2 {
 
 #containerRight {
     width: 25%;
+    background: black;
+    justify-content: center;
+}
+
+#containerRightRight {
+    width: 20%;
     background: black;
     justify-content: center;
 }
@@ -47,7 +53,7 @@ h1, h2 {
 
 .field {
     margin: 0px;
-    width: 4.8%;
+    width: 10%;
     height: 100%;
     border: 1px grey solid;
 }
@@ -59,19 +65,20 @@ h1, h2 {
     width: 100%;
 }
 
-#gameOverContainer {
+.middleWindow {
     position: absolute;
     z-index: 1;
     background: black;
 
-    width: 250px;
-    height: 160px;
+    width: 300px;
+    height: 220px;
 
     text-align: center;
+    justify-content: center;
     top: 0;
     bottom: 0;
-    left: 0;
-    right: 0;
+    left: 30.6%;
+    right: 69.4%;
     margin: auto;
 
     border: grey 6px solid;
@@ -90,10 +97,13 @@ h1.gameOver {
     font: bold 50px Arial;
     color: white;
 
-    text-align: center;
+    width: 500px;
+    height: 160px;
+
+    text-align: left;
     top: 1%;
-    left: 0;
-    right: 0;
+    left: 32.7%;
+    right: 67.3%;
     margin: auto;
 }
 
@@ -148,8 +158,10 @@ h1.gameOver {
 
 .title{
     margin-top: 2%;
+    margin-bottom: 12%;
     color: white;
     font-size: 50px;
+    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
 }
 
 .holdField {
@@ -171,4 +183,75 @@ h1.gameOver {
     height: 24%;
     width: 45%;
     border: grey 5px solid;
+}
+
+#leaderBoardContainer{
+    height: 95%;
+    text-align: center;
+    justify-content: center;
+}
+
+.leaderBoardEntry{
+    font-size: 20px;
+    color: white;
+    margin: auto;
+    border: grey 5px solid;
+}
+
+#timeDisplayContainer{
+    margin-top: 20%;
+    height: 10%;
+    width: 100%;
+    text-align: center;
+}
+
+#timeText{
+    font-size: 50px;
+    color: white;
+}
+
+#leaderBoardNameInput{
+    font-size: 20px;
+    height: 15%;
+    width: 80%;
+    text-align: center;
+}
+
+#sendScoreButton{
+    margin-top: 5%;
+    height: 20%;
+    width: 40%;
+    background-color: black;
+    color: white;
+    font-size: 24px;
+    border: grey 2px solid;
+}
+
+label{
+    height: 2px;
+    color: lightgray;
+}
+
+.middleWindowTitle{
+    color: white;
+    margin-top: 2%;
+    height: 20%;
+}
+
+.middleWindowSubTitle{
+    color: white;
+    height: 10%;
+    margin-top: 10px;
+}
+
+#linesLeftToBeCleared{
+    margin-top: 10%;
+    height: 10%;
+    width: 100%;
+    text-align: center;
+}
+
+#linesLeftText{
+    font-size: 56px;
+    color: white;
 }

@@ -1,23 +1,60 @@
 let playField = [];
 let playFieldElements = [];
-let tilesNames = ["I", "T", "S", "Z", "L", "J", "O"];
+const tilesNames = ["I", "T", "S", "Z", "L", "J", "O"];
 
 let staticPlayFieldSave = [];
-
 let queue = [];
 
 let isGameActive = false;
-let middleWindow = document.getElementById("gameOverContainer");
-middleWindow.style.display = "block";
+const gameOverWindow = document.getElementById("gameOverContainer");
+gameOverWindow.style.display = "block";
 
 let score = 0;
-let scoreDisplay = document.getElementById("scoreDisplay");
+const scoreDisplay = document.getElementById("scoreDisplay");
 
-let queueDisplay = new QueueDisplay();
+const queueDisplay = new QueueDisplay();
 
-let holdDisplay = new HoldDisplay();
+const holdDisplay = new HoldDisplay();
 let pressedHold = false;
 let itemNameBeforeSwapping = undefined;
+
+let leaderBoardEntries = [];
+const leaderBoardContainer = document.getElementById("leaderBoardContainer");
+
+let timeStampGameStarted = 0;
+let finalTimeGameEnded = 0;
+const timeElement = document.getElementById("timeText");
+const timeElementOnMiddleWindow = document.getElementById("timeDisplayOnMiddleWindow");
+let countClearedLines = 0;
+const linesNeededToFinish = 40;
+const linesLeftToBeClearedElement = document.getElementById("linesLeftText");
+linesLeftToBeClearedElement.innerHTML = linesNeededToFinish + "L";
+const submitTimeWindow = document.getElementById("submitTimeContainer");
+submitTimeWindow.style.display = "none";
+const nameInput = document.getElementById("leaderBoardNameInput");
+
+refreshLeaderBoard();
+
+function initializeLeaderBoard() {
+    $('.leaderBoardEntry').remove();
+    for (let i = 0; i < leaderBoardEntries.length; i++) {
+        let elementLeaderBoardEntry = document.createElement("div");
+        elementLeaderBoardEntry.className = "leaderBoardEntry";
+        let elementText = document.createElement("p");
+        elementText.innerHTML = leaderBoardEntries[i].name + "<br>" + leaderBoardEntries[i].getTimeFromMilliSecondsToString();
+
+        elementLeaderBoardEntry.appendChild(elementText);
+
+        let widthInPercent = 100 - (i * 6) < 80 ? 80 : 100 - (i * 6);
+        let heightInPercent = 12 - (i) < 8 ? 8 : 12 - (i);
+        let fontSizeInPx = 32 - (i * 3) < 20 ? 20 : 32 - (i * 3);
+        elementLeaderBoardEntry.style.width = widthInPercent + "%";
+        elementLeaderBoardEntry.style.height = heightInPercent + "%";
+        elementLeaderBoardEntry.style.fontSize = fontSizeInPx + "px";
+
+        leaderBoardContainer.appendChild(elementLeaderBoardEntry);
+    }
+}
 
 for (let i = 0; i < 22; i++) {
     playField.push([]);
@@ -86,14 +123,24 @@ function swapCurrentTileWithTileInHoldSpot() {
     queueDisplay.refreshQueueView();
 }
 
+function setTextOfTimeOnTheLeftContainer(time) {
+    timeElement.innerHTML = Math.floor(time / 1000 / 60) + ":" + ("0" + Math.floor(time / 1000) % 60).slice(-2) + ":" + ("0" + Math.floor(time / 10) % 100).slice(-2);
+}
+
+function setTextOfLinesLeftToBeClearedOnTheLeftContainer() {
+    linesLeftToBeClearedElement.innerHTML = (linesNeededToFinish - countClearedLines < 0 ? 0 : linesNeededToFinish - countClearedLines) + "L";
+}
+
 function gameLoop(timestamp) {
     if (isGameActive) {
+        setTextOfTimeOnTheLeftContainer(Date.now() - timeStampGameStarted);
+
         if (timeStampTick === undefined) {
             timeStampTick = timestamp;
         }
 
         if (currentTile === undefined) {
-            if(itemNameBeforeSwapping !== undefined && holdDisplay.holdingTileName !== undefined) {
+            if (itemNameBeforeSwapping !== undefined && holdDisplay.holdingTileName !== undefined) {
                 swapCurrentTileWithTileInHoldSpot();
             } else {
                 setNewCurrentTileFromQueue();
@@ -103,11 +150,11 @@ function gameLoop(timestamp) {
         }
 
         if (elapsed > delayBetweenTicks) {
+            timeStampTick = timestamp;
             doTetrisLogic();
             drawTetrisField();
-            timeStampTick = timestamp;
-            pressedHold = false;
         }
+
 
         window.requestAnimationFrame(gameLoop);
     }
@@ -122,6 +169,7 @@ function setNewCurrentTileFromQueue() {
     setElapsedTimeBetweenTicksToMax();
     setPlayFieldToStaticField();
     queueDisplay.refreshQueueView();
+    pressedHold = false;
 }
 
 function addNewEmptyLineToFieldInTheFront(fieldElement) {
@@ -176,10 +224,16 @@ function checkAndDeleteIfLinesCleared() {
         }
     }
 
+    countClearedLines += linesCleared.length;
+    setTextOfLinesLeftToBeClearedOnTheLeftContainer();
+
     staticPlayFieldSave = newStaticField;
     setPlayFieldToStaticField();
     drawTetrisField();
     calculateAndAddPoints(linesCleared.length);
+    if (countClearedLines >= linesNeededToFinish) {
+        gameOver(false);
+    }
 }
 
 function doTetrisLogic() {
@@ -275,25 +329,40 @@ function setStaticFieldToPlayField() {
 }
 
 function setElapsedTimeBetweenTicksToZero() {
-    elapsed = 0;
+    timeStampTick = undefined;
 }
 
 function setElapsedTimeBetweenTicksToMax() {
     elapsed = Number.MAX_SAFE_INTEGER;
 }
 
-function gameOver() {
-    middleWindow.style.display = "block";
-    middleWindow.children[0].innerHTML = "Game over!";
-    middleWindow.children[1].innerHTML = "Press [R] to \n restart!";
-    isGameActive = false;
+function gameOver(died) {
+    if (died) {
+        submitTimeWindow.style.display = "none";
+        gameOverWindow.style.display = "block";
+        gameOverWindow.children[0].innerHTML = "Game over!";
+        gameOverWindow.children[1].innerHTML = "Press [R] to <br> restart!";
+        isGameActive = false;
+    } else {
+        finalTimeGameEnded = Date.now() - timeStampGameStarted;
+        setTextOfTimeOnTheLeftContainer(finalTimeGameEnded);
+        timeElementOnMiddleWindow.innerHTML = Math.floor(finalTimeGameEnded / 1000 / 60) + ":" + ("0" + Math.floor(finalTimeGameEnded / 1000) % 60).slice(-2) + ":" + ("0" + Math.floor(finalTimeGameEnded / 10) % 100).slice(-2);
+        gameOverWindow.style.display = "none";
+        submitTimeWindow.style.display = "block";
+        isGameActive = false;
+    }
 }
 
 function startGame() {
-    middleWindow.style.display = "none";
+    gameOverWindow.style.display = "none";
+    submitTimeWindow.style.display = "none";
     resetPlayField();
     requestAnimationFrame(gameLoop);
     isGameActive = true;
+    timeStampGameStarted = Date.now();
+    countClearedLines = 0;
+    setTextOfLinesLeftToBeClearedOnTheLeftContainer();
+    refreshLeaderBoard();
 }
 
 function resetPlayField() {
@@ -321,12 +390,48 @@ function resetPlayField() {
 }
 
 function holdTile() {
-    if(holdDisplay.holdingTileName !== undefined){
-        itemNameBeforeSwapping =  holdDisplay.holdingTileName;
+    if (holdDisplay.holdingTileName !== undefined) {
+        itemNameBeforeSwapping = holdDisplay.holdingTileName;
     }
     holdDisplay.setHoldingTileName(currentTile.tileName);
     pressedHold = true;
     currentTile = undefined;
     setElapsedTimeBetweenTicksToMax();
+}
+
+function sendLeaderBoardEntryToServer() {
+    fetch("https://detschn.ddns.net/leaderboardT", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST',
+            'Access-Control-Allow-Headers': 'X-Requested-With,content-type',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({'entry': nameInput.value + "/" + finalTimeGameEnded + "/" + Date.now()})
+    })
+        .then((response) => response.text())
+        .then((data) => {
+            console.log('Send Leaderboard entry!');
+            refreshLeaderBoard();
+            gameOver(true);
+        })
+}
+
+function refreshLeaderBoard() {
+
+    fetch('https://detschn.ddns.net/leaderboard')
+        .then(response => response.json())
+        .then(data => {
+            leaderBoardEntries = [];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] !== null) {
+                    leaderBoardEntries.push(new LeaderBoardEntry(data[i].name, data[i].time, data[i].timeStampCreated));
+                }
+            }
+            initializeLeaderBoard();
+        });
 }
 

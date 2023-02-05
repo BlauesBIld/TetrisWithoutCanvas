@@ -13,16 +13,27 @@
             <h1 class="title">Hold</h1>
         </div>
         <div id="holdContainer">
-
+        </div>
+        <div id="timeDisplayContainer">
+            <h1 id="timeText">0:00:00</h1>
+        </div>
+        <div id="linesLeftToBeCleared">
+            <h1 id="linesLeftText"></h1>
         </div>
     </div>
     <div id="containerMid" class="container">
         <div id="playFieldContainer">
             <h1 id="scoreDisplay">Score: 0</h1>
         </div>
-        <div id="gameOverContainer">
-            <h1 id="middleWindowTitle" class="gameOver">Welcome!</h1>
+        <div id="gameOverContainer" class="middleWindow">
+            <h1 class="middleWindowTitle gameOver">Welcome!</h1>
             <h2 id="middleWindowSubtext" class="gameOver">Press [R] to <br>start!</h2>
+        </div>
+        <div id="submitTimeContainer" class="middleWindow">
+            <h3 class="middleWindowSubTitle">Your time: </h3>
+            <h1 id="timeDisplayOnMiddleWindow" class="middleWindowTitle">-</h1>
+            <label for="leaderBoardNameInput">Name: </label><input type="text" id="leaderBoardNameInput">
+            <button id="sendScoreButton" class="gameOver" onclick="sendLeaderBoardEntryToServer()">Send</button>
         </div>
     </div>
     <div id="containerRight" class="container">
@@ -30,8 +41,16 @@
             <h1 class="title">Queue</h1>
         </div>
     </div>
+    <div id="containerRightRight" class="container">
+        <div id="leaderBoardContainer">
+            <h1 class="title">LeaderBoard</h1>
+        </div>
+    </div>
 </div>
 </body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+<script src="js/leaderBoardEntry.js"></script>
 <script src="js/blockVisualsConfig.js"></script>
 <script src="js/drawTiles.js"></script>
 <script src="js/queueDisplay.js"></script>
