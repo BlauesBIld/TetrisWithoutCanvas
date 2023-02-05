@@ -13,8 +13,6 @@ class QueueDisplay {
         for (let i = 0; i < queue.length; i++) {
             drawTileInField(this.displayElements[i], blocksVisualConfig[queue[i]]);
         }
-
-        console.log(this.displayElements);
     }
 
     addNewQueueDisplayBlock(index) {

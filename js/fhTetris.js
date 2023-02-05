@@ -174,7 +174,6 @@ function gameLoop(timestamp) {
             }
 
             iterationOfTiles++;
-            console.log(usedHoldOnIteration + " - " + iterationOfTiles);
 
             if (usedHoldOnIteration + 1 < iterationOfTiles) {
                 usedHold = false;
@@ -452,7 +451,6 @@ function sendLeaderBoardEntryToServer() {
     })
         .then((response) => response.text())
         .then((data) => {
-            console.log('Send Leaderboard entry!');
             refreshLeaderBoard();
             gameOver(true);
         })
@@ -474,7 +472,7 @@ function refreshLeaderBoard() {
 
 function handleSideWaysInput() {
     if (isGameActive) {
-        if (sideWaysInput !== "") {
+        if (currentTile !== undefined && sideWaysInput !== "") {
             currentTile.move(sideWaysInput);
         }
     }
@@ -483,7 +481,7 @@ function handleSideWaysInput() {
 function handleDownInput() {
     if (isGameActive) {
         if (downInput > 0) {
-            if (!currentTile.checkIfReachedBottom()) {
+            if (currentTile !== undefined && !currentTile.checkIfReachedBottom()) {
                 currentTile.move("down");
                 setElapsedTimeBetweenTicksToZero();
             }
