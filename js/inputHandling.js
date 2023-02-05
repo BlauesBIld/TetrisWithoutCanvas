@@ -10,10 +10,10 @@ document.addEventListener("keydown", ev => {
                 currentTile.move("right");
                 break;
             case "ARROWUP":
-            case "W":
+            case "X":
                 currentTile.rotate(1);
                 break;
-            case "Q":
+            case "Y":
                 currentTile.rotate(-1);
                 break;
             case "ARROWDOWN":
