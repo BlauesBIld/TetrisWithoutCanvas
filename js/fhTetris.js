@@ -37,6 +37,9 @@ const nameInput = document.getElementById("leaderBoardNameInput");
 
 refreshLeaderBoard();
 
+/***
+ * Clears and initializes the leaderboard with a HTTP GET Request to my server, where a backend webservices is running.
+ */
 function initializeLeaderBoard() {
     $('.leaderBoardEntry').remove();
     for (let i = 0; i < leaderBoardEntries.length; i++) {
@@ -86,6 +89,9 @@ let elapsedSinceLastTick = Number.MAX_SAFE_INTEGER;
 let invisibleTileOpacity = "0%";
 let previewTileOpacity = "50%";
 
+/***
+ * Just adding random tile-names to the queue, which are not already in the queue.
+ */
 function initializeQueue() {
     for (let i = 0; i < 5; i++) {
         queue.push(getRandomTile());
@@ -101,6 +107,9 @@ drawTetrisField();
 
 window.requestAnimationFrame(gameLoop);
 
+/***
+ * Initializes the front end tetris field, which consists of 20 div-rows and each row consists of 10 div-fields which represent a tetris block.
+ */
 function initializeField() {
     for (let i = 0; i < playField.length; i++) {
         let rowElement = document.createElement("div");
@@ -118,6 +127,9 @@ function initializeField() {
     }
 }
 
+/***
+ * swaps the currentTile with the tile in the hold-space
+ */
 function swapCurrentTileWithTileInHoldSpot() {
     if (!usedHold) {
         setStaticFieldToPlayField();
@@ -129,14 +141,25 @@ function swapCurrentTileWithTileInHoldSpot() {
     queueDisplay.refreshQueueView();
 }
 
+/***
+ * Displays the time since start of the game on the left side of the screen
+ * @param time time since start in ms
+ */
 function setTextOfTimeOnTheLeftContainer(time) {
     timeElement.innerHTML = Math.floor(time / 1000 / 60) + ":" + ("0" + Math.floor(time / 1000) % 60).slice(-2) + ":" + ("0" + Math.floor(time / 10) % 100).slice(-2);
 }
 
+/***
+ * Displays how many lines u need to clear to end the game.
+ */
 function setTextOfLinesLeftToBeClearedOnTheLeftContainer() {
     linesLeftToBeClearedElement.innerHTML = (linesNeededToFinish - countClearedLines < 0 ? 0 : linesNeededToFinish - countClearedLines) + "L";
 }
 
+/***
+ * logic to handle movement sideways and down input
+ * @param timestamp used to set a delay between moving down and between sideways movements.
+ */
 function handleInputs(timestamp) {
     if (timeStampInputDown === undefined) {
         timeStampInputDown = timestamp;
@@ -156,6 +179,10 @@ function handleInputs(timestamp) {
     }
 }
 
+/***
+ * The gameloop.
+ * @param timestamp when the gameloop is called in ms since the website is opened. (same as window.performance.now())
+ */
 function gameLoop(timestamp) {
     if (isGameActive) {
         handleInputs(timestamp);
@@ -193,6 +220,10 @@ function gameLoop(timestamp) {
     }
 }
 
+/***
+ * Sets the new currentTile from one of the names in the queue.
+ * Skips also to the next tick, so the tile gets instantly drawn.
+ */
 function setNewCurrentTileFromQueue() {
     if (!usedHold) {
         setStaticFieldToPlayField();
@@ -204,6 +235,10 @@ function setNewCurrentTileFromQueue() {
     queueDisplay.refreshQueueView();
 }
 
+/***
+ * Adds a new empty line at the top of the field. Is used when a line gets cleared.
+ * @param fieldElement either playField or staticField
+ */
 function addNewEmptyLineToFieldInTheFront(fieldElement) {
     fieldElement.unshift([])
     fieldElement[0].push(-1);
@@ -213,6 +248,14 @@ function addNewEmptyLineToFieldInTheFront(fieldElement) {
     fieldElement[0].push(-2);
 }
 
+/***
+ * For the amount of linesCleared corresponding number is added to the score and then displayed on the website:
+ * 1 Line  : 40 points;
+ * 2 Lines : 100 points;
+ * 3 Lines : 300 points;
+ * 4 Lines : 1200 points;
+ * @param amountLinesCleared
+ */
 function calculateAndAddPoints(amountLinesCleared) {
     switch (amountLinesCleared) {
         case 1:
@@ -232,6 +275,11 @@ function calculateAndAddPoints(amountLinesCleared) {
 
 }
 
+/***
+ * Each time the currentTile is newly set, this method is called to check if there are full lines which need to be cleared.
+ * Therefore, the staticfield needs to be adjusted for the next currentTile.
+ * At the end it also checks if the amountOfClearedLines is higher than the neededAmountOfClearedLines to check if the game has ended.
+ */
 function checkAndDeleteIfLinesCleared() {
     let linesCleared = [];
     for (let i = 0; i < staticPlayFieldSave.length - 1; i++) {
@@ -268,10 +316,18 @@ function checkAndDeleteIfLinesCleared() {
     }
 }
 
+/***
+ * Just moves the currentTile down by 1.
+ * Previously had more functionality but I refactored the code and let it stay like this.
+ */
 function doTetrisLogic() {
     currentTile.move("down");
 }
 
+/***
+ * Set the color of each div in the playfield corresponding to the number in each field.
+ * The first to 2 rows are invisble and needed to be able to spawn the currentTile above the visible playField
+ */
 function drawTetrisField() {
     for (let i = 0; i < 2; i++) {
         for (let j = 0; j < playField[i].length; j++) {
@@ -344,6 +400,10 @@ function drawTetrisField() {
     }
 }
 
+/***
+ * Gets a random name of a tile which is not already in the queue.
+ * @returns {string}
+ */
 function getRandomTile() {
     let randoTile = tilesNames[Math.floor(Math.random() * tilesNames.length)];
     while (queue.includes(randoTile)) {
@@ -352,22 +412,38 @@ function getRandomTile() {
     return randoTile;
 }
 
+/***
+ * Everything that is on the staticField will now be saved in the playField.
+ */
 function setPlayFieldToStaticField() {
     playField = JSON.parse(JSON.stringify(staticPlayFieldSave));
 }
 
+/***
+ * The current playField with the currentTile will be saved to the staticField so when the next Tile spawns the previous currentTile now counts the staticField.
+ */
 function setStaticFieldToPlayField() {
     staticPlayFieldSave = JSON.parse(JSON.stringify(playField));
 }
 
+/***
+ * Used to reset the delay of the currentTick when the player moves a piece down.
+ */
 function setElapsedTimeBetweenTicksToZero() {
     timeStampTick = undefined;
 }
 
+/***
+ * Used to skip a tick.
+ */
 function setElapsedTimeBetweenTicksToMax() {
     elapsedSinceLastTick = Number.MAX_SAFE_INTEGER;
 }
 
+/***
+ * Displays the middleWindow after a game is finished (either lost or won)
+ * @param died check if the player died when a piece spawned inside another piece or if the player has cleared enough lines.
+ */
 function gameOver(died) {
     if (died) {
         submitTimeWindow.style.display = "none";
@@ -385,6 +461,10 @@ function gameOver(died) {
     }
 }
 
+/***
+ * Starts the game and sets all necessary values back to default values at the beginning of the round.
+ * Also sets all windows to invisible.
+ */
 function startGame() {
     gameOverWindow.style.display = "none";
     submitTimeWindow.style.display = "none";
@@ -395,9 +475,11 @@ function startGame() {
     countClearedLines = 0;
     setTextOfLinesLeftToBeClearedOnTheLeftContainer();
     refreshLeaderBoard();
-    playGameAudio();
 }
 
+/***
+ * Resets all the necessary values of the game, used in startGame();
+ */
 function resetPlayField() {
     iterationOfTiles = 0;
     playField = [];
@@ -424,6 +506,9 @@ function resetPlayField() {
     drawTetrisField();
 }
 
+/***
+ * Functionality to hold a tile.
+ */
 function holdTile() {
     if (!usedHold) {
         if (holdDisplay.holdingTileName !== undefined) {
@@ -437,6 +522,9 @@ function holdTile() {
     }
 }
 
+/***
+ * When the needed amount of lines are cleared the player can enter a nickname and his time will be sent to the server.
+ */
 function sendLeaderBoardEntryToServer() {
     fetch("https://detschn.ddns.net/leaderboardT", {
         method: 'POST',
@@ -457,6 +545,9 @@ function sendLeaderBoardEntryToServer() {
         })
 }
 
+/***
+ * Refreshes the leaderboard entries.
+ */
 function refreshLeaderBoard() {
     fetch('https://detschn.ddns.net/leaderboard')
         .then(response => response.json())
@@ -471,6 +562,9 @@ function refreshLeaderBoard() {
         });
 }
 
+/***
+ * Called in the gameloop to see if the player is currently pressing a sideways move button.
+ */
 function handleSideWaysInput() {
     if (isGameActive) {
         if (currentTile !== undefined && sideWaysInput !== "") {
@@ -479,6 +573,9 @@ function handleSideWaysInput() {
     }
 }
 
+/***
+ * Called in the gameloop to see if the player is currently pressing the move down button.
+ */
 function handleDownInput() {
     if (isGameActive) {
         if (downInput > 0) {

@@ -9,6 +9,9 @@ class LeaderBoardEntry{
         this.timeStampCreated = timeStampCreated;
     }
 
+    /***
+     * @returns {string} time in format HH:MM:SS
+     */
     getTimeFromMilliSecondsToString(){
         return Math.floor(this.time/1000/60) + ":" + ("0" + Math.floor(this.time/1000)%60).slice(-2) + ":" + ("0" + Math.floor(this.time/10)%100).slice(-2);
     }

@@ -1,3 +1,10 @@
+/***
+ * Used to draw a field with tetris blocks inside of it.
+ * Primarly used to draw the queue on the right side and the hold tile on the left side.
+ * Not used to draw the playField since the first 2 rows are invisible and the playField has previewColors from 8 to 14.
+ * @param displayElement the field where a tetris tiles are inside.
+ * @param tileVisual the tile which needs to be drawn.
+ */
 function drawTileInField(displayElement, tileVisual) {
     for (let i = 0; i < displayElement.length; i++) {
         for (let j = 0; j < displayElement[i].length; j++) {

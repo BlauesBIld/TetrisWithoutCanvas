@@ -1,3 +1,6 @@
+/***
+ * Class to handle the Queue frontend functionality.
+ */
 class QueueDisplay {
     rightContainer = document.getElementById("containerRight");
     displayElements = [];
@@ -9,12 +12,15 @@ class QueueDisplay {
     }
 
     refreshQueueView() {
-
         for (let i = 0; i < queue.length; i++) {
             drawTileInField(this.displayElements[i], blocksVisualConfig[queue[i]]);
         }
     }
 
+    /***
+     * After the site is loaded, 5 4x4 field are added on the right side to display each tile in the queue.
+     * @param index
+     */
     addNewQueueDisplayBlock(index) {
         let newQueueElement = document.createElement("div");
         newQueueElement.className = "queueTileElement";

@@ -1,3 +1,6 @@
+/***
+ * This variable represents all the starting rotations of each tile in tetris.
+ */
 blocksVisualConfig = {
     "T": [
         [0, 1, 0],

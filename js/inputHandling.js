@@ -2,6 +2,12 @@ let sideWaysInput = "",
     downInput = 0;
 let pressingRight = false,
     pressingLeft = false;
+
+/***
+ * The 2 following EventListener handle the inputs, while rotation, hold, drop and restart input are just function calls,
+ * the movement inputs are handled in another way to make the movement of the currentTile more smooth.
+ */
+
 document.addEventListener("keydown", ev => {
     if (isGameActive) {
         switch (ev.key.toUpperCase()) {
