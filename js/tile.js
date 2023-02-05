@@ -112,7 +112,7 @@ class Tile {
         for (let i = 0; i < this.blocksVisual.length; i++) {
             for (let j = 0; j < this.blocksVisual[i].length; j++) {
                 if ((this.blocksVisual[i][j - 1] === undefined || this.blocksVisual[i][j - 1] === 0) && this.blocksVisual[i][j] > 0) {
-                    if (playField[this.position.row][this.position.column + j - 1] === -1 || playField[this.position.row + i][this.position.column + j - 1] > 0 && playField[this.position.row + i + 1][this.position.column + j] <= 7) {
+                    if (playField[this.position.row][this.position.column + j - 1] === -1 || playField[this.position.row + i][this.position.column + j - 1] > 0) {
                         return true;
                     }
                 }

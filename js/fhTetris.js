@@ -402,6 +402,7 @@ function resetPlayField() {
     playField = [];
     staticPlayFieldSave = [];
     queue = [];
+    initializeQueue();
     currentTile = undefined;
     holdDisplay.setHoldingTileName(undefined);
 
@@ -418,7 +419,6 @@ function resetPlayField() {
         playField[i].push(-2);
     }
 
-    initializeQueue();
     drawTetrisField();
 }
 
