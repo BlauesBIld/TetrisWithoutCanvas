@@ -421,7 +421,6 @@ function sendLeaderBoardEntryToServer() {
 }
 
 function refreshLeaderBoard() {
-
     fetch('https://detschn.ddns.net/leaderboard')
         .then(response => response.json())
         .then(data => {

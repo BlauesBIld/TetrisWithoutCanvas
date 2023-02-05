@@ -255,3 +255,22 @@ label{
     font-size: 56px;
     color: white;
 }
+
+.controlsContainer{
+    margin-top: 25%;
+    font-size: 22px;
+    display: flex;
+    color: white;
+    width: 90%;
+    height: 20%;
+}
+
+.controlsContainerLeft{
+    width: 60%;
+    text-align: center;
+}
+
+.controlsContainerRight{
+    width: 40%;
+    text-align: left;
+}
