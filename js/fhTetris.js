@@ -1,7 +1,6 @@
 let playField = [];
 let playFieldElements = [];
 const tilesNames = ["I", "T", "S", "Z", "L", "J", "O"];
-let tetrisTheme = new Audio('./audio/theme.mp3');
 
 let staticPlayFieldSave = [];
 let queue = [];
@@ -489,10 +488,4 @@ function handleDownInput() {
             }
         }
     }
-}
-
-function playGameAudio() {
-    tetrisTheme.volume = 0.03;
-    tetrisTheme.loop = true;
-    tetrisTheme.play();
 }
