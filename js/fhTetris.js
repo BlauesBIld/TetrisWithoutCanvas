@@ -15,7 +15,9 @@ const scoreDisplay = document.getElementById("scoreDisplay");
 const queueDisplay = new QueueDisplay();
 
 const holdDisplay = new HoldDisplay();
-let pressedHold = false;
+let usedHold = false;
+let usedHoldOnIteration = -1;
+let iterationOfTiles = 0;
 let itemNameBeforeSwapping = undefined;
 
 let leaderBoardEntries = [];
@@ -73,9 +75,13 @@ for (let i = 0; i < 22; i++) {
 let playFieldContainer = document.getElementById("playFieldContainer");
 let timeStampTick;
 let delayBetweenTicks = 1000;
+let timeStampInputDown;
+let timeStampInputSide;
+let delayBetweenInputDown = 60;
+let delayBetweenInputSide = 40;
 let currentTile = undefined;
 let spawnRow = 0, spawnColumn = 6;
-let elapsed = Number.MAX_SAFE_INTEGER;
+let elapsedSinceLastTick = Number.MAX_SAFE_INTEGER;
 
 let invisibleTileOpacity = "0%";
 let previewTileOpacity = "50%";
@@ -113,7 +119,7 @@ function initializeField() {
 }
 
 function swapCurrentTileWithTileInHoldSpot() {
-    if (!pressedHold) {
+    if (!usedHold) {
         setStaticFieldToPlayField();
     }
     currentTile = new Tile(itemNameBeforeSwapping);
@@ -131,8 +137,29 @@ function setTextOfLinesLeftToBeClearedOnTheLeftContainer() {
     linesLeftToBeClearedElement.innerHTML = (linesNeededToFinish - countClearedLines < 0 ? 0 : linesNeededToFinish - countClearedLines) + "L";
 }
 
+function handleInputs(timestamp) {
+    if (timeStampInputDown === undefined) {
+        timeStampInputDown = timestamp;
+    }
+    if (timeStampInputSide === undefined) {
+        timeStampInputSide = timestamp;
+    }
+
+    if (timestamp - timeStampInputDown > delayBetweenInputDown) {
+        handleDownInput();
+        timeStampInputDown = timestamp;
+    }
+
+    if (timestamp - timeStampInputSide > delayBetweenInputSide) {
+        timeStampInputSide = timestamp;
+        handleSideWaysInput();
+    }
+}
+
 function gameLoop(timestamp) {
     if (isGameActive) {
+        handleInputs(timestamp);
+
         setTextOfTimeOnTheLeftContainer(Date.now() - timeStampGameStarted);
 
         if (timeStampTick === undefined) {
@@ -145,11 +172,18 @@ function gameLoop(timestamp) {
             } else {
                 setNewCurrentTileFromQueue();
             }
+
+            iterationOfTiles++;
+            console.log(usedHoldOnIteration + " - " + iterationOfTiles);
+
+            if (usedHoldOnIteration + 1 < iterationOfTiles) {
+                usedHold = false;
+            }
         } else {
-            elapsed = timestamp - timeStampTick;
+            elapsedSinceLastTick = timestamp - timeStampTick;
         }
 
-        if (elapsed > delayBetweenTicks) {
+        if (elapsedSinceLastTick > delayBetweenTicks) {
             timeStampTick = timestamp;
             doTetrisLogic();
             drawTetrisField();
@@ -161,7 +195,7 @@ function gameLoop(timestamp) {
 }
 
 function setNewCurrentTileFromQueue() {
-    if (!pressedHold) {
+    if (!usedHold) {
         setStaticFieldToPlayField();
     }
     currentTile = new Tile(queue.shift());
@@ -169,7 +203,6 @@ function setNewCurrentTileFromQueue() {
     setElapsedTimeBetweenTicksToMax();
     setPlayFieldToStaticField();
     queueDisplay.refreshQueueView();
-    pressedHold = false;
 }
 
 function addNewEmptyLineToFieldInTheFront(fieldElement) {
@@ -333,7 +366,7 @@ function setElapsedTimeBetweenTicksToZero() {
 }
 
 function setElapsedTimeBetweenTicksToMax() {
-    elapsed = Number.MAX_SAFE_INTEGER;
+    elapsedSinceLastTick = Number.MAX_SAFE_INTEGER;
 }
 
 function gameOver(died) {
@@ -390,13 +423,16 @@ function resetPlayField() {
 }
 
 function holdTile() {
-    if (holdDisplay.holdingTileName !== undefined) {
-        itemNameBeforeSwapping = holdDisplay.holdingTileName;
+    if (!usedHold) {
+        if (holdDisplay.holdingTileName !== undefined) {
+            itemNameBeforeSwapping = holdDisplay.holdingTileName;
+        }
+        holdDisplay.setHoldingTileName(currentTile.tileName);
+        usedHold = true;
+        usedHoldOnIteration = iterationOfTiles;
+        currentTile = undefined;
+        setElapsedTimeBetweenTicksToMax();
     }
-    holdDisplay.setHoldingTileName(currentTile.tileName);
-    pressedHold = true;
-    currentTile = undefined;
-    setElapsedTimeBetweenTicksToMax();
 }
 
 function sendLeaderBoardEntryToServer() {
@@ -434,3 +470,21 @@ function refreshLeaderBoard() {
         });
 }
 
+function handleSideWaysInput() {
+    if (isGameActive) {
+        if (sideWaysInput !== "") {
+            currentTile.move(sideWaysInput);
+        }
+    }
+}
+
+function handleDownInput() {
+    if (isGameActive) {
+        if (downInput > 0) {
+            if (!currentTile.checkIfReachedBottom()) {
+                currentTile.move("down");
+                setElapsedTimeBetweenTicksToZero();
+            }
+        }
+    }
+}

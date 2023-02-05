@@ -266,11 +266,11 @@ label{
 }
 
 .controlsContainerLeft{
-    width: 60%;
-    text-align: center;
+    width: 45%;
+    text-align: right;
 }
 
 .controlsContainerRight{
-    width: 40%;
+    width: 45%;
     text-align: left;
 }
